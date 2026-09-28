@@ -24,7 +24,9 @@ a{color:inherit}:focus-visible{outline:3px solid var(--b);outline-offset:3px}
 nav{position:sticky;top:0;z-index:5;backdrop-filter:blur(14px);background:var(--nav);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
 nav .wrap{display:flex;justify-content:space-between;align-items:center;height:64px}
 nav b{font:800 1.2rem Sora,sans-serif;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-nav div{display:flex;gap:1.4rem;font-size:.95rem}nav a{text-decoration:none;color:var(--muted)}nav a:hover{color:var(--ink)}
+.nr{display:flex;align-items:center;gap:1.2rem}
+.menu{display:flex;gap:1.4rem;font-size:.95rem}
+.menu a{text-decoration:none;color:var(--muted)}.menu a:hover{color:var(--ink)}
 .hero{display:grid;grid-template-columns:1.4fr 1fr;gap:3rem;align-items:center;padding:5rem 0 6rem}
 .hi{color:var(--b);font-weight:600;margin:0 0 .8rem}
 .hero h1{font-size:clamp(2.6rem,7vw,5rem);font-weight:800;letter-spacing:-.035em}
@@ -61,7 +63,7 @@ h2::after{content:"";display:block;width:64px;height:5px;border-radius:3px;backg
 .proj:hover{border-color:var(--b)}
 .ico{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:1.5rem;background:var(--grad)}
 .proj:nth-child(2) .ico{background:linear-gradient(120deg,var(--b),#4ADE80)}.proj:nth-child(3) .ico{background:linear-gradient(120deg,var(--c),var(--a))}
-.proj h3{font-size:1.3rem}.proj p{margin:0;color:var(--muted);flex:1;font-size:.98rem}.proj a.gh{font-weight:600;color:var(--b);text-decoration:none}.proj a{font-weight:600;color:var(--b);text-decoration:none}
+.proj h3{font-size:1.3rem}.proj p{margin:0;color:var(--muted);flex:1;font-size:.98rem}.proj a{font-weight:600;color:var(--b);text-decoration:none}
 .contact{text-align:center;padding:3rem 1.5rem}
 .contact h3{font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:.8rem}
 .contact p{color:var(--muted);margin:0 0 1.6rem}
@@ -70,14 +72,27 @@ button.btn{font:600 1.05rem "DM Sans",sans-serif;background:transparent;color:va
 footer{padding:2.5rem 0;text-align:center;color:var(--muted);font-size:.9rem}
 .tg{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:1.15rem;cursor:pointer;padding:0;transition:transform .2s}
 .tg:hover{transform:rotate(20deg) scale(1.08)}
-.nr{display:flex;align-items:center;gap:1.2rem}
-@media (max-width:780px){.hero,.about,.bars,.projects{grid-template-columns:1fr}.avatar{order:-1;width:200px}.avatar div{font-size:3.6rem}.hero{padding:2.5rem 0 3rem}nav div{gap:.8rem;font-size:.82rem}}
-@media (max-width:560px){.nr>div{display:none}}
+.mb{display:none}.mb:hover{transform:none}
+@media (max-width:780px){
+.hero,.about,.bars,.projects{grid-template-columns:1fr}.avatar{order:-1;width:200px}.avatar div{font-size:3.6rem}.hero{padding:2.5rem 0 3rem}
+.mb{display:inline-grid}
+.nr{flex-direction:row-reverse}
+.menu{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;padding:.4rem 1.5rem 1rem;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 20px 30px -20px rgba(0,0,0,.5)}
+.menu.open{display:flex}
+.menu a{padding:1rem 0;font-size:1.1rem;color:var(--ink);border-bottom:1px solid var(--line)}
+.menu a:last-child{border-bottom:0}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
-<nav><div class="wrap"><b>DT</b><div class="nr"><div><a href="#apropos">À propos</a><a href="#competences">Compétences</a><a href="#parcours">Parcours</a><a href="#projets">Projets</a><a href="#contact">Contact</a></div><button class="tg" id="tg" type="button" aria-label="Passer en mode clair" title="Changer de thème"></button></div></div></nav>
+<nav><div class="wrap"><b>DT</b>
+  <div class="nr">
+    <button class="tg" id="tg" type="button" aria-label="Passer en mode clair" title="Changer de thème"></button>
+    <button class="tg mb" id="mb" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu">☰</button>
+    <div class="menu" id="menu"><a href="#apropos">À propos</a><a href="#competences">Compétences</a><a href="#parcours">Parcours</a><a href="#projets">Projets</a><a href="#contact">Contact</a></div>
+  </div>
+</div></nav>
 <main class="wrap">
 <header class="hero">
   <div>
@@ -148,6 +163,15 @@ function apply(t){root.setAttribute('data-theme',t);meta.setAttribute('content',
 var t='dark';try{var sv=localStorage.getItem('theme');if(sv==='light'||sv==='dark')t=sv}catch(e){}
 apply(t);
 btn.addEventListener('click',function(){t=t==='dark'?'light':'dark';apply(t);try{localStorage.setItem('theme',t)}catch(e){}});
+})();
+(function(){
+var mb=document.getElementById('mb'),menu=document.getElementById('menu');
+function setMenu(open){menu.classList.toggle('open',open);mb.textContent=open?'✕':'☰';mb.setAttribute('aria-expanded',open);mb.setAttribute('aria-label',open?'Fermer le menu':'Ouvrir le menu')}
+mb.addEventListener('click',function(){setMenu(!menu.classList.contains('open'))});
+menu.addEventListener('click',function(e){if(e.target.closest('a'))setMenu(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&menu.classList.contains('open')){setMenu(false);mb.focus()}});
+document.addEventListener('click',function(e){if(menu.classList.contains('open')&&!e.target.closest('nav'))setMenu(false)});
+window.addEventListener('resize',function(){if(window.innerWidth>780)setMenu(false)});
 })();
 (function(){
 var fills=document.querySelectorAll('.fill');
